@@ -1,0 +1,7 @@
+base_urls:
+  - https://example.com/news
+categories_url: https://example.com/news/categories
+output_dir: output
+default_category: общество
+parsers:
+  - example_parser
