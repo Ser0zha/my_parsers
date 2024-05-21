@@ -1,7 +1,7 @@
 base_urls:
-  - https://example.com/news
-categories_url: https://example.com/news/categories
+  - http://bereganews.ru/
+categories_url: http://bereganews.ru/category//
 output_dir: output
-default_category: общество
+default_category: obshhestvo
 parsers:
   - example_parser
