@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from parsers.base_parser import BaseParser
 
 
-class ExampleParser(BaseParser):
+class Parser(BaseParser):
     def fetch_html(self, url):
         response = requests.get(url)
         response.raise_for_status()
