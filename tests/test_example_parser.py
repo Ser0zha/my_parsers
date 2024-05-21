@@ -1,11 +1,11 @@
 import unittest
 
-from parsers.example_parser import ExampleParser
+from parsers.example_parser import Parser
 
 
 class TestExampleParser(unittest.TestCase):
     def setUp(self):
-        self.parser = ExampleParser()
+        self.parser = Parser()
 
     def test_fetch_html(self):
         url = "https://example.com/news"
