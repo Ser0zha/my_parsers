@@ -148,7 +148,7 @@ def main(base_url: list[list[str]], category=None, output_dir='output') -> None:
         html = fetch_html(url, category)
 
         search_info(html, output_dir, filename)
-        exit()
+
         sample = get_topic_sentences(file_os_name, topic)
 
         writerr(sample, file_os_name)
