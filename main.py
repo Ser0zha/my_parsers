@@ -36,7 +36,7 @@ def main(config):
 
     for base_url in config['base_urls']:
         for parser_module in parsers:
-            parser_class = getattr(parser_module, 'ExampleParser')
+            parser_class = getattr(parser_module, 'Parser')
             parser = parser_class()
 
             categories = parser.get_categories(config['categories_url'])
