@@ -13,7 +13,7 @@ from requests import Response
 nltk.download('punkt')
 
 
-def fetch_html(base_url, category=None) -> Response:
+def fetch_html(base_url, category=None):
     if category:
         url = f"{base_url}?category={category}"
     else:
@@ -21,7 +21,6 @@ def fetch_html(base_url, category=None) -> Response:
 
     response = requests.get(url)
     response.raise_for_status()
-
     return response
 
 
@@ -112,14 +111,13 @@ def separation_url(string: str) -> str:
             final_string += i
         else:
             break
-    return final_string + '_' + 'content.txt'
+    return final_string + '_' + 'content'
 
 
 def writerr(file_for_write, file_p: str, trigger=False) -> None:
     if trigger:
         with open(file_p, 'w', encoding='utf-8') as f:
-            for paragraph in file_for_write:
-                f.write(paragraph.get_text() + '\n')
+            f.write(file_for_write.get_text() + '\n')
 
     if not trigger:
         with open(file_p, "w", encoding='utf-8') as f:
@@ -127,13 +125,15 @@ def writerr(file_for_write, file_p: str, trigger=False) -> None:
                 f.write(i + '\n')
 
 
-def search_info(resp: Response, address: str) -> None:
+def search_info(resp: Response, address: str, fname: str) -> None:
     if resp.status_code == 200:
         soup = BeautifulSoup(resp.text, 'html.parser')
         paragraphs = soup.find_all('p')
-        # paragraphs = soup.find_all('article')
-
-        writerr(paragraphs, address, trigger=True)
+        texts = [paragrap for paragrap in paragraphs]
+        
+        for i, val in enumerate(texts):
+            file_os_name = os.path.join(address, f'{fname}_{i}.txt')
+            writerr(val, file_os_name, trigger=True)
     else:
         print(f'Failed to fetch webpage:{resp.status_code}')
         exit()
@@ -145,12 +145,10 @@ def main(base_url: list[list[str]], category=None, output_dir='output') -> None:
     for url, topic in base_url:
         filename = separation_url(url)
 
-        file_os_name = os.path.join(output_dir, filename)
-
         html = fetch_html(url, category)
 
-        search_info(html, file_os_name)
-
+        search_info(html, output_dir, filename)
+        exit()
         sample = get_topic_sentences(file_os_name, topic)
 
         writerr(sample, file_os_name)
