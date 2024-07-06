@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
+from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
+from bs4 import ResultSet
+from requests import Response
 
 
 def separation_url(string: str) -> str:
@@ -16,37 +19,62 @@ def separation_url(string: str) -> str:
     return final_string + '_' + 'content'
 
 
-url = 'https://rostov-province.ru/'
+def fetch_html(base_url: str) -> Response:
+    response = requests.get(base_url)
+    response.raise_for_status()
+    return response
 
-response = requests.get(url)
 
-soup = BeautifulSoup(response.content, "html.parser")
+def main_parser(ready_topics: ResultSet) -> None:
+    for topic in ready_topics:
+        a = parsing_in_depth(topic)
+        for count, i in enumerate(a):
+            parsing_in_depth(i, code=1, count=count)
+        break
 
-sel = soup.select('.wrap > ul > li > a')
 
-Path("output").mkdir(parents=True, exist_ok=True)
-
-filename = separation_url(url)
-count = 0
-
-for html in sel:
-
-    link = html['href']
+def parsing_in_depth(sel, code: int = 0, count: int = 0):
+    link = sel['href']
     resp = requests.get(url + str(link))
     bs = BeautifulSoup(resp.content, "html.parser")
+    if code == 0:
+        sel = bs.select('.intro-body-content > .title > a')
+        return sel
+    else:
+        sel = bs.select('.content-text')
+        saves(sel, count)
 
-    sel_2 = bs.select('.intro-body-content > .title > a')
 
-    for html_2 in sel_2:
+def parser(url_addres: str) -> ResultSet:
+    respons = fetch_html(url_addres)
+    if respons.status_code == 200:
+        soup = BeautifulSoup(respons.content, "html.parser")
+        sel = soup.select('.wrap > ul > li > a')
+        return sel
+    else:
+        print(f'Failed to fetch webpage:{respons.status_code}')
+        exit()
 
-        link_of_link = html_2['href']
-        respp = requests.get(url + str(link_of_link))
-        bts = BeautifulSoup(respp.text, "html.parser")
 
-        paragraphs = bts.select('.content-text')
-        for i in paragraphs:
-            file_os_name = os.path.join("output", f'{filename}_{count}.txt')
-            with open(file_os_name, 'w', encoding='utf-8') as f:
-                f.write(i.get_text('\n'))
+def saves(paragraphs: Any, count: int) -> None:
+    global filename
+    for i in paragraphs:
+        file_os_name = os.path.join("output_2", f'{filename}_{count}.txt')
+        with open(file_os_name, 'w', encoding='utf-8') as f:
+            f.write(i.get_text(''))
 
-        count += 1
+
+def main() -> None:
+    Path("output_2").mkdir(parents=True, exist_ok=True)
+    global filename
+
+    filename = separation_url(url)
+    topics = parser(url)
+    main_parser(topics)
+
+
+if __name__ == "__main__":
+    url = 'https://rostov-province.ru/'
+    filename: str
+
+    main()
