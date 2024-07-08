@@ -4,3 +4,4 @@ nltk
 pyyaml
 pytest
 pymorphy2
+pathlib
