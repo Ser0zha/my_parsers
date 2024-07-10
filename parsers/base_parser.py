@@ -7,9 +7,9 @@ class BaseParser(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_categories(self, categories_url):
+    def get_categories(self, categories_url, path_for_cat):
         pass
 
     @abc.abstractmethod
-    def parse_html(self, html):
+    def parse_html(self, sel, url):
         pass
